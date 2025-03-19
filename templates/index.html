@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Code Debugging Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🐍 AI Code Debugging Chatbot</h1>
+        <textarea id="codeInput" placeholder="Paste your Python code here..."></textarea>
+        <button onclick="debugCode()">🔍 Debug Code</button>
+        
+        <h2>💡 Suggested Fixes:</h2>
+        <pre id="fixOutput">Waiting for response...</pre>
+        
+        <h2>✅ Corrected Code:</h2>
+        <pre id="correctedCode">(Will appear here)</pre>
+    </div>
+
+    <script>
+        function debugCode() {
+            const code = document.getElementById("codeInput").value;
+            document.getElementById("fixOutput").innerText = "⏳ Analyzing... Please wait...";
+            document.getElementById("correctedCode").innerText = "";
+
+            fetch("/debug", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ code: code })
+            })
+            .then(response => response.json())
+            .then(data => {
+                setTimeout(() => {
+                    document.getElementById("fixOutput").innerText = 
+                        `1️⃣ ${data.fixes[0]}\n2️⃣ ${data.fixes[1]}\n3️⃣ ${data.fixes[2]}`;
+                }, 5000);
+                
+                setTimeout(() => {
+                    document.getElementById("correctedCode").innerText = `🚀 Corrected Code:\n${data.corrected}`;
+                }, 5000);
+            })
+            .catch(error => {
+                console.error("🚨 Fetch Error:", error);
+                document.getElementById("fixOutput").innerText = "❌ Failed to get response!";
+            });
+        }
+    </script>
+</body>
+</html>
